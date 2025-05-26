@@ -352,6 +352,10 @@ function deleteTodo(index) {
         return;
     }
 
+    // Immediately update data source after confirmation
+    todos.splice(index, 1);
+    saveTodos();
+
     const listItemToRemove = todoList.querySelector(`li[data-original-index="${index}"]`);
 
     if (listItemToRemove) {
@@ -370,21 +374,18 @@ function deleteTodo(index) {
                 if (listItemToRemove.parentNode) {
                     listItemToRemove.remove();
                 }
-                // Perform data operations after successful animation and removal
-                todos.splice(index, 1);
-                saveTodos();
+                // Crucially, call renderTodos() here to update all indices, counters, etc.
                 renderTodos();
                 showToast('Task deleted successfully!', 'error');
             }
             listItemToRemove.removeEventListener('animationend', handler); // Ensure listener is removed
         }, { once: true });
     } else {
-        // If listItemToRemove is null (not found in DOM), log a warning and update data directly
-        console.warn(`Attempted to delete a non-existent list item from DOM for index ${index}. Proceeding with data removal.`);
-        todos.splice(index, 1);
-        saveTodos();
-        renderTodos();
-        showToast('Task deleted. (Item not found in current view)', 'error');
+        // If listItemToRemove is null (e.g., not visible due to filtering),
+        // data is already updated. Log, re-render, and show toast.
+        console.warn(`List item for index ${index} not found in current DOM view for animation. Data already updated.`);
+        renderTodos(); // Re-render to update UI (counters, etc.)
+        showToast('Task deleted. (Item was not in current view)', 'error');
     }
 }
 
