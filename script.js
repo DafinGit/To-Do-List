@@ -359,7 +359,7 @@ function deleteTodo(index) {
     const listItemToRemove = todoList.querySelector(`li[data-original-index="${index}"]`);
 
     if (listItemToRemove) {
-        // If the list item exists in the current DOM view, animate its removal
+        // If the list item exists in the DOM, animate its removal
         const computedStyle = getComputedStyle(listItemToRemove);
         listItemToRemove.style.setProperty('--initial-height', computedStyle.height);
         listItemToRemove.style.setProperty('--initial-padding-top', computedStyle.paddingTop);
@@ -374,7 +374,7 @@ function deleteTodo(index) {
                 if (listItemToRemove.parentNode) {
                     listItemToRemove.remove();
                 }
-                // Crucially, call renderTodos() here to update all indices and counters
+                // Crucially, call renderTodos() here to update all indices, counters, etc.
                 renderTodos();
                 showToast('Task deleted successfully!', 'error');
             }
@@ -382,7 +382,7 @@ function deleteTodo(index) {
         }, { once: true });
     } else {
         // If listItemToRemove is null (e.g., not visible due to filtering),
-        // log a warning, then re-render and show toast.
+        // data is already updated. Log, re-render, and show toast.
         console.warn(`List item for index ${index} not found in current DOM view for animation. Data already updated.`);
         renderTodos(); // Re-render to update UI (counters, etc.)
         showToast('Task deleted. (Item was not in current view)', 'error');
