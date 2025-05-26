@@ -61,11 +61,11 @@ Folosiți codul cu precauție.
 
 Light Mode Example:
 
-![alt text](screenshots/light-mode.png)
+![To-Do List in Light Mode](https://raw.githubusercontent.com/DafinGit/To-Do-List/main/screenshots/light-mode.png)
 
 Dark Mode Example:
 
-![alt text](screenshots/dark-mode.png)
+![To-Do List in Dark Mode](https://raw.githubusercontent.com/DafinGit/To-Do-List/main/screenshots/dark-mode.png)
 
 🛣️ Future Improvements (Ideas for Further Development)
 
