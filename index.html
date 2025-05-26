@@ -4,15 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Daily To-Do List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="toast-container"></div>
+
     <div class="container">
         <h1>My Daily To-Do List</h1>
+        <!-- NEW: Theme Toggle Button -->
+        <button id="theme-toggle" aria-label="Toggle light/dark theme">
+            <i class="fas fa-moon"></i> <!-- Moon icon for default light mode (suggests switching to dark) -->
+        </button>
+        <!--------------------------->
+
         <div class="input-section">
             <input type="text" id="todo-input" placeholder="Add a new to-do...">
+            <select id="priority-select">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
             <button id="add-button">Add To-Do</button>
         </div>
+        <div id="error-message" class="error-message"></div>
+
+        <div class="filter-section">
+            <button class="filter-button active" data-filter="all">All</button>
+            <button class="filter-button" data-filter="active">Active</button>
+            <button class="filter-button" data-filter="completed">Completed</button>
+        </div>
+
+        <div class="clear-buttons-section">
+            <button id="clear-completed-button" class="action-button">Clear Completed</button>
+            <button id="clear-all-button" class="action-button">Clear All</button>
+        </div>
+
+        <div class="task-counter-section">
+            <span id="total-tasks">Total: 0</span>
+            <span id="active-tasks">Active: 0</span>
+            <span id="completed-tasks">Completed: 0</span>
+        </div>
+
         <ul id="todo-list">
             <!-- To-do items will be dynamically inserted here by JavaScript -->
         </ul>
