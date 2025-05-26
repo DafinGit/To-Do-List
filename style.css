@@ -1,106 +1,513 @@
+/* ===================================== */
+/*  0. CSS Variables (Theming)           */
+/* ===================================== */
+
+:root {
+    /* Base Colors (Light Theme) */
+    --primary-blue: #007bff;
+    --primary-blue-hover: #0056b3;
+    --text-color: #333;
+    --subtle-text-color: #888;
+    --background-color: #eaf0f4;
+    --container-bg: #fff;
+    --container-shadow: rgba(0, 0, 0, 0.12);
+    --border-color: #c9d0d6;
+    --input-bg: #f8f8f8;
+    --hover-bg: #f0f0f0;
+    --list-item-bg: #f9f9f9;
+    --list-item-border: #eee;
+    --list-item-shadow: rgba(0,0,0,0.05);
+
+    /* Filter/Action Buttons (Light Theme) */
+    --filter-btn-bg: #e9ecef;
+    --filter-btn-color: #495057;
+    --filter-btn-border: #ced4da;
+    --filter-btn-hover-bg: #d1d9e0;
+    --filter-btn-hover-color: #212529;
+    --filter-btn-hover-border: #aebacd;
+    --action-btn-bg: #6c757d;
+    --action-btn-hover-bg: #5a6268;
+    --delete-btn-bg: #dc3545;
+    --delete-btn-hover-bg: #c82333;
+
+    /* Priority Colors (Light Theme) */
+    --priority-low-bg: #d4edda;
+    --priority-low-color: #155724;
+    --priority-medium-bg: #ffeeba;
+    --priority-medium-color: #856404;
+    --priority-high-bg: #f8d7da;
+    --priority-high-color: #721c24;
+
+    /* Highlight/Accent Colors (Light Theme) */
+    --complete-icon-color: #28a745;
+    --complete-icon-hover-bg: rgba(40, 167, 69, 0.1);
+    --delete-icon-color: #dc3545;
+    --delete-icon-hover-bg: rgba(220, 53, 69, 0.1);
+    --editing-outline: #007bff;
+    --editing-bg: #e6f2ff;
+    --editing-priority-bg: #f0f8ff;
+    --drag-border: #007bff;
+    --drag-bg: #e0f2f7;
+    --drag-shadow: rgba(0, 123, 255, 0.2);
+    --drag-over-bg: #d8eafa;
+
+    /* Error Message (Light Theme) */
+    --error-message-color: #dc3545;
+
+    /* Task Counter (Light Theme) */
+    --counter-bg: #f0f4f7;
+    --counter-color: #555;
+    --counter-completed-color: #28a745;
+    --counter-active-color: #007bff;
+
+    /* Toast Notifications (Light Theme) */
+    --toast-bg: #333;
+    --toast-color: #fff;
+    --toast-shadow: rgba(0, 0, 0, 0.2);
+    --toast-success-bg: #28a745;
+    --toast-error-bg: #dc3545;
+    --toast-info-bg: #007bff;
+}
+
+/* Dark Theme Overrides */
+body.dark-theme {
+    /* Base Colors (Dark Theme) */
+    --text-color: #e0e0e0;
+    --subtle-text-color: #b0b0b0;
+    --background-color: #2c2c2c;
+    --container-bg: #3c3c3c;
+    --container-shadow: rgba(0, 0, 0, 0.4);
+    --border-color: #555;
+    --input-bg: #4a4a4a;
+    --hover-bg: #4a4a4a;
+    --list-item-bg: #454545;
+    --list-item-border: #555;
+    --list-item-shadow: rgba(0,0,0,0.2);
+
+    /* Filter/Action Buttons (Dark Theme) */
+    --filter-btn-bg: #555;
+    --filter-btn-color: #e0e0e0;
+    --filter-btn-border: #666;
+    --filter-btn-hover-bg: #666;
+    --filter-btn-hover-color: #fff;
+    --filter-btn-hover-border: #777;
+    --action-btn-bg: #777;
+    --action-btn-hover-bg: #888;
+    --delete-btn-bg: #e74c3c; /* Brighter red for visibility */
+    --delete-btn-hover-bg: #c0392b;
+
+    /* Priority Colors (Dark Theme) - Slightly adjusted for contrast */
+    --priority-low-bg: #2ecc71; /* Green */
+    --priority-low-color: #1a4a2f;
+    --priority-medium-bg: #f1c40f; /* Yellow */
+    --priority-medium-color: #6a5307;
+    --priority-high-bg: #e74c3c; /* Red */
+    --priority-high-color: #721c24;
+
+    /* Highlight/Accent Colors (Dark Theme) */
+    --complete-icon-color: #2ecc71;
+    --complete-icon-hover-bg: rgba(46, 204, 113, 0.2);
+    --delete-icon-color: #e74c3c;
+    --delete-icon-hover-bg: rgba(231, 76, 60, 0.2);
+    --editing-outline: #2980b9;
+    --editing-bg: #3a4a5a;
+    --editing-priority-bg: #4a5a6a;
+    --drag-border: #2980b9;
+    --drag-bg: #4a5a6a;
+    --drag-shadow: rgba(41, 128, 185, 0.3);
+    --drag-over-bg: #5a6a7a;
+
+    /* Error Message (Dark Theme) */
+    --error-message-color: #e74c3c;
+
+    /* Task Counter (Dark Theme) */
+    --counter-bg: #404040;
+    --counter-color: #d0d0d0;
+    --counter-completed-color: #2ecc71;
+    --counter-active-color: #3498db;
+}
+
+/* ===================================== */
+/*  0.1. Base Styles & Global Layout     */
+/* ===================================== */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
+    background-color: var(--background-color);
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Align to the top of the container */
+    align-items: flex-start;
     min-height: 100vh;
     margin: 0;
     padding: 20px;
     box-sizing: border-box;
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
 }
 
 .container {
-    background-color: #fff;
+    background-color: var(--container-bg);
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 6px 15px var(--container-shadow);
     width: 100%;
-    max-width: 500px; /* Limit the maximum width of the list */
+    max-width: 550px;
+    margin-top: 50px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth theme transition */
 }
 
 h1 {
     text-align: center;
-    color: #333;
+    color: var(--text-color);
     margin-bottom: 25px;
+    font-size: 2em;
+    font-weight: 600;
 }
 
+/* NEW: Theme Toggle Button Styling */
+#theme-toggle {
+    position: absolute; /* Position it relative to the nearest positioned ancestor (body/viewport) */
+    top: 25px;
+    right: 25px;
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: var(--text-color); /* Inherit text color for icon */
+    transition: color 0.3s ease, transform 0.2s ease;
+    padding: 5px; /* Add some padding for easier click */
+    border-radius: 50%; /* Make it round */
+}
+
+#theme-toggle:hover {
+    color: var(--primary-blue);
+    transform: rotate(15deg); /* Subtle rotation effect */
+}
+
+
+/* ===================================== */
+/*  1. Input Section                     */
+/* ===================================== */
 .input-section {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     margin-bottom: 20px;
-    gap: 10px; /* Space between input and button */
+    gap: 10px;
 }
 
 #todo-input {
-    flex-grow: 1; /* Allows input to take available space */
+    flex-grow: 1;
+    min-width: 180px;
     padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
     font-size: 16px;
+    color: var(--text-color);
+    background-color: var(--input-bg);
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth theme transition */
+}
+
+#todo-input::placeholder {
+    color: var(--subtle-text-color);
 }
 
 #todo-input:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Kept fixed, as it's a specific highlight */
+}
+
+#priority-select {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: var(--input-bg);
+    cursor: pointer;
+    flex-shrink: 0;
+    color: var(--text-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
+}
+
+#priority-select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
 #add-button {
-    background-color: #007bff;
+    background-color: var(--primary-blue);
     color: white;
     border: none;
     padding: 12px 20px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.2s ease;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    flex-shrink: 0;
 }
 
 #add-button:hover {
-    background-color: #0056b3;
+    background-color: var(--primary-blue-hover);
+    transform: translateY(-1px);
 }
 
+#add-button:active {
+    transform: translateY(0);
+}
+
+/* ===================================== */
+/*  2. Error Message                     */
+/* ===================================== */
+.error-message {
+    color: var(--error-message-color);
+    font-size: 0.9em;
+    text-align: center;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, color 0.3s ease; /* Smooth theme transition */
+    min-height: 1.2em;
+}
+
+.error-message.show {
+    opacity: 1;
+}
+
+/* ===================================== */
+/*  3. Filter Buttons Section            */
+/* ===================================== */
+.filter-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 25px;
+    gap: 10px;
+}
+
+.filter-button {
+    background-color: var(--filter-btn-bg);
+    color: var(--filter-btn-color);
+    border: 1px solid var(--filter-btn-border);
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-button:hover {
+    background-color: var(--filter-btn-hover-bg);
+    color: var(--filter-btn-hover-color);
+    border-color: var(--filter-btn-hover-border);
+}
+
+.filter-button.active {
+    background-color: var(--primary-blue);
+    color: white; /* Stays white for active blue */
+    border-color: var(--primary-blue);
+    font-weight: bold;
+}
+
+.filter-button.active:hover {
+    background-color: var(--primary-blue-hover);
+    border-color: var(--primary-blue-hover);
+}
+
+/* ===================================== */
+/*  4. Clear Buttons Section             */
+/* ===================================== */
+.clear-buttons-section {
+    display: flex;
+    justify-content: center;
+    margin-top: -15px;
+    margin-bottom: 25px;
+    gap: 10px;
+}
+
+.action-button {
+    background-color: var(--action-btn-bg);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.action-button:hover {
+    background-color: var(--action-btn-hover-bg);
+    transform: translateY(-1px);
+}
+
+.action-button:active {
+    transform: translateY(0);
+}
+
+#clear-all-button {
+    background-color: var(--delete-btn-bg);
+}
+
+#clear-all-button:hover {
+    background-color: var(--delete-btn-hover-bg);
+}
+
+/* ===================================== */
+/*  4.5. Task Counter Section            */
+/* ===================================== */
+.task-counter-section {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--counter-bg);
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+    color: var(--counter-color);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Stays subtle, not theme-dependent */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
+}
+
+.task-counter-section span {
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#completed-tasks {
+    color: var(--counter-completed-color);
+}
+
+#active-tasks {
+    color: var(--counter-active-color);
+}
+
+
+/* ===================================== */
+/*  5. To-Do List Items                  */
+/* ===================================== */
 #todo-list {
-    list-style: none; /* Remove default list bullets */
+    list-style: none;
     padding: 0;
     margin: 0;
 }
 
 #todo-list li {
-    background-color: #f9f9f9;
+    background-color: var(--list-item-bg);
     padding: 15px;
     margin-bottom: 10px;
-    border-radius: 4px;
+    border-radius: 6px;
+    border: 1px solid var(--list-item-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid #eee;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, opacity 0.3s ease, transform 0.3s ease, height 0.3s ease, padding 0.3s ease, margin-bottom 0.3s ease, border-width 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    cursor: grab;
+    flex-wrap: nowrap;
+    box-shadow: 0 1px 3px var(--list-item-shadow);
 }
 
 #todo-list li:last-child {
-    margin-bottom: 0; /* No margin below the last item */
+    margin-bottom: 0;
 }
 
 #todo-list li:hover {
-    background-color: #f0f0f0;
+    background-color: var(--hover-bg);
 }
 
+#todo-list li:active {
+    cursor: grabbing;
+}
+
+/* ===================================== */
+/*  6. To-Do Text & Priority Display     */
+/* ===================================== */
 .todo-text {
-    flex-grow: 1; /* Allows text to take available space */
-    margin-right: 15px;
+    flex-grow: 1;
+    margin-right: 10px;
     font-size: 17px;
-    color: #333;
+    color: var(--text-color);
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+    min-width: 0;
 }
 
 .todo-text.completed {
     text-decoration: line-through;
-    color: #888;
+    color: var(--subtle-text-color);
 }
 
+.todo-text[contenteditable="true"] {
+    outline: 2px solid var(--editing-outline);
+    background-color: var(--editing-bg);
+    padding: 2px 5px;
+    border-radius: 3px;
+    cursor: text;
+    line-height: 1.5;
+    transition: background-color 0.3s ease, outline-color 0.3s ease;
+}
+
+.todo-text.completed[contenteditable="true"] {
+    text-decoration: none;
+}
+
+.todo-priority {
+    font-size: 0.85em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
+}
+
+/* Priority-specific colors */
+.priority-low {
+    background-color: var(--priority-low-bg);
+    color: var(--priority-low-color);
+}
+
+.priority-medium {
+    background-color: var(--priority-medium-bg);
+    color: var(--priority-medium-color);
+}
+
+.priority-high {
+    background-color: var(--priority-high-bg);
+    color: var(--priority-high-color);
+}
+
+.todo-priority-edit {
+    margin-left: 10px;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--editing-priority-bg);
+    color: var(--text-color); /* Ensure text is readable in dark mode */
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
+}
+
+
+/* ===================================== */
+/*  7. Action Buttons                    */
+/* ===================================== */
 .todo-actions {
     display: flex;
-    gap: 8px; /* Space between action buttons */
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 .complete-button,
@@ -108,38 +515,234 @@ h1 {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.2em; /* Larger icon size */
+    font-size: 1.2em;
     padding: 5px;
     border-radius: 4px;
     transition: background-color 0.2s ease, color 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .complete-button {
-    color: #28a745; /* Green for complete */
+    color: var(--complete-icon-color);
 }
 
 .complete-button:hover {
-    background-color: rgba(40, 167, 69, 0.1);
+    background-color: var(--complete-icon-hover-bg);
 }
 
 .delete-button {
-    color: #dc3545; /* Red for delete */
+    color: var(--delete-icon-color);
 }
 
 .delete-button:hover {
-    background-color: rgba(220, 53, 69, 0.1);
+    background-color: var(--delete-icon-hover-bg);
 }
 
-/* Optional: Basic responsiveness */
+/* ===================================== */
+/*  8. Drag and Drop Styles              */
+/* ===================================== */
+.dragging {
+    opacity: 0.4;
+    border: 2px dashed var(--drag-border);
+    background-color: var(--drag-bg);
+    box-shadow: 0 4px 8px var(--drag-shadow);
+    transition: none; /* Disable normal transitions while dragging for responsiveness */
+}
+
+.drag-over {
+    background-color: var(--drag-over-bg);
+    border: 2px solid var(--drag-border);
+}
+
+/* ===================================== */
+/*  9. Animations                        */
+/* ===================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toastOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+#todo-list li.fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+#todo-list li.fade-out {
+    animation: fadeOut 0.3s ease-in forwards;
+}
+
+/* When fade-out is active, set height to 0 to collapse the space */
+#todo-list li.fade-out {
+    height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-width: 0;
+    box-shadow: none; /* Remove shadow during fade out */
+}
+
+/* Toast Notifications */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none; /* Allows clicks to pass through */
+}
+
+.toast {
+    background-color: var(--toast-bg);
+    color: var(--toast-color);
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--toast-shadow);
+    opacity: 0;
+    transform: translateX(100%);
+    animation: toastIn 0.4s ease-out forwards, toastOut 0.4s ease-in forwards 2.5s;
+    min-width: 250px;
+    max-width: 350px;
+    display: flex;
+    align-items: center;
+    font-size: 0.95em;
+    pointer-events: auto;
+}
+
+.toast.success { background-color: var(--toast-success-bg); }
+.toast.error { background-color: var(--toast-error-bg); }
+.toast.info { background-color: var(--toast-info-bg); }
+
+#toast-container > .toast:nth-last-child(n+4) {
+    display: none;
+}
+
+
+/* ===================================== */
+/*  11. Media Queries (Responsiveness)   */
+/* ===================================== */
 @media (max-width: 600px) {
+    body {
+        padding: 15px;
+    }
+
     .container {
         padding: 20px;
+        margin-top: 20px;
     }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    #theme-toggle {
+        top: 15px;
+        right: 15px;
+    }
+
     .input-section {
         flex-direction: column;
+        align-items: stretch;
         gap: 15px;
     }
+    #todo-input,
+    #priority-select,
     #add-button {
         width: 100%;
+    }
+
+    .filter-section {
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    .filter-button {
+        flex-grow: 1;
+        max-width: 30%;
+        text-align: center;
+    }
+
+    .clear-buttons-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .action-button {
+        width: 100%;
+    }
+
+    .task-counter-section {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px;
+    }
+    .task-counter-section span {
+        width: 100%;
+        justify-content: center;
+    }
+
+    #todo-list li {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        padding: 12px;
+    }
+    .todo-text {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+    .todo-priority {
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+    .todo-actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 5px;
+    }
+
+    #toast-container {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        align-items: center;
+    }
+    .toast {
+        min-width: unset;
+        width: 100%;
+        text-align: center;
+        justify-content: center;
     }
 }
