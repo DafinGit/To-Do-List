@@ -40,7 +40,7 @@ Lista ta de sarcini vine acum cu următoarele funcționalități:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/dafingit.github.io/To-Do-List/
+    git clone https://github.com/DafinGit/To-Do-List.git
     ```
 2.  **Navigate to the project directory:**
     ```bash
