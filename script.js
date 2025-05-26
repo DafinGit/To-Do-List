@@ -32,19 +32,37 @@ let draggedItemOriginalIndex = null;
 /* ===================================== */
 
 function loadTodos() {
-    const storedTodos = localStorage.getItem('todos');
-    if (storedTodos) {
-        todos = JSON.parse(storedTodos);
-        todos = todos.map(todo => ({
-            text: todo.text,
-            completed: todo.completed,
-            priority: todo.priority || 'medium'
-        }));
+    try {
+        const storedTodos = localStorage.getItem('todos');
+        if (storedTodos) {
+            todos = JSON.parse(storedTodos);
+            // Ensure todos is an array and handle potential parsing errors more gracefully
+            if (!Array.isArray(todos)) {
+                console.warn('Stored todos is not an array. Resetting to empty.');
+                todos = [];
+            }
+            todos = todos.map(todo => ({
+                text: todo.text,
+                completed: todo.completed || false, // Ensure completed has a default
+                priority: todo.priority || 'medium'
+            }));
+        } else {
+            todos = []; // Initialize to empty array if nothing is stored
+        }
+    } catch (error) {
+        console.error("Error loading todos from localStorage:", error);
+        showToast("Could not load saved tasks. Storage might be disabled or full.", 'error');
+        todos = []; // Default to an empty array on error
     }
 }
 
 function saveTodos() {
-    localStorage.setItem('todos', JSON.stringify(todos));
+    try {
+        localStorage.setItem('todos', JSON.stringify(todos));
+    } catch (error) {
+        console.error("Error saving todos to localStorage:", error);
+        showToast("Could not save tasks. Changes might not persist.", 'error');
+    }
 }
 
 // NEW: Theme persistence functions
@@ -53,7 +71,14 @@ function saveTodos() {
  * @returns {string} The saved theme ('light' or 'dark'), defaults to 'light'.
  */
 function loadThemePreference() {
-    return localStorage.getItem('theme') || 'light';
+    try {
+        const theme = localStorage.getItem('theme');
+        return theme || 'light'; // Return 'light' if theme is null or empty
+    } catch (error) {
+        console.error("Error loading theme preference from localStorage:", error);
+        showToast("Could not load saved theme preference.", 'info');
+        return 'light'; // Default to 'light' theme on error
+    }
 }
 
 /**
@@ -61,7 +86,12 @@ function loadThemePreference() {
  * @param {string} theme - The theme to save ('light' or 'dark').
  */
 function saveThemePreference(theme) {
-    localStorage.setItem('theme', theme);
+    try {
+        localStorage.setItem('theme', theme);
+    } catch (error) {
+        console.error("Error saving theme preference to localStorage:", error);
+        showToast("Could not save theme preference.", 'error');
+    }
 }
 
 
@@ -141,6 +171,9 @@ function renderTodos() {
         completeButton.appendChild(checkIcon);
         completeButton.title = todo.completed ? 'Mark as Incomplete' : 'Mark as Complete';
         completeButton.dataset.index = originalIndex;
+        // Add ARIA attributes for completeButton
+        completeButton.setAttribute('aria-label', todo.completed ? `Mark task "${todo.text}" as incomplete` : `Mark task "${todo.text}" as complete`);
+        completeButton.setAttribute('aria-pressed', todo.completed ? 'true' : 'false');
 
         const deleteButton = document.createElement('button');
         deleteButton.classList.add('delete-button');
@@ -149,6 +182,8 @@ function renderTodos() {
         deleteButton.appendChild(trashIcon);
         deleteButton.title = 'Delete To-Do';
         deleteButton.dataset.index = originalIndex;
+        // Add ARIA attribute for deleteButton
+        deleteButton.setAttribute('aria-label', `Delete task "${todo.text}"`);
 
         actionsDiv.appendChild(completeButton);
         actionsDiv.appendChild(deleteButton);
@@ -243,10 +278,13 @@ function setFilter(filter) {
     currentFilter = filter;
 
     filterButtons.forEach(button => {
-        if (button.dataset.filter === currentFilter) {
+        const isCurrentFilter = button.dataset.filter === currentFilter;
+        if (isCurrentFilter) {
             button.classList.add('active');
+            button.setAttribute('aria-pressed', 'true');
         } else {
             button.classList.remove('active');
+            button.setAttribute('aria-pressed', 'false');
         }
     });
 
@@ -282,6 +320,21 @@ function toggleComplete(index) {
     if (index >= 0 && index < todos.length) {
         todos[index].completed = !todos[index].completed;
         saveTodos();
+
+        // Update ARIA attributes of the specific button
+        const listItem = todoList.querySelector(`li[data-original-index="${index}"]`);
+        if (listItem) {
+            const completeButton = listItem.querySelector('.complete-button');
+            if (completeButton) {
+                const todo = todos[index];
+                completeButton.setAttribute('aria-label', todo.completed ? `Mark task "${todo.text}" as incomplete` : `Mark task "${todo.text}" as complete`);
+                completeButton.setAttribute('aria-pressed', todo.completed ? 'true' : 'false');
+                // Also update the title for consistency, as it's used for tooltips
+                completeButton.title = todo.completed ? 'Mark as Incomplete' : 'Mark as Complete';
+            }
+        }
+        // It's important to call renderTodos() if the visual representation of the task itself changes (e.g. strikethrough text)
+        // or if the task might move between filters.
         renderTodos();
         showToast(`Task marked as ${todos[index].completed ? 'completed' : 'active'}!`, 'info');
     }
@@ -302,6 +355,7 @@ function deleteTodo(index) {
     const listItemToRemove = todoList.querySelector(`li[data-original-index="${index}"]`);
 
     if (listItemToRemove) {
+        // If the list item exists in the DOM, animate its removal
         const computedStyle = getComputedStyle(listItemToRemove);
         listItemToRemove.style.setProperty('--initial-height', computedStyle.height);
         listItemToRemove.style.setProperty('--initial-padding-top', computedStyle.paddingTop);
@@ -313,36 +367,87 @@ function deleteTodo(index) {
 
         listItemToRemove.addEventListener('animationend', function handler(e) {
             if (e.animationName === 'fadeOut') {
-                listItemToRemove.remove();
+                if (listItemToRemove.parentNode) {
+                    listItemToRemove.remove();
+                }
+                // Perform data operations after successful animation and removal
                 todos.splice(index, 1);
                 saveTodos();
                 renderTodos();
                 showToast('Task deleted successfully!', 'error');
             }
-            listItemToRemove.removeEventListener('animationend', handler);
+            listItemToRemove.removeEventListener('animationend', handler); // Ensure listener is removed
         }, { once: true });
     } else {
+        // If listItemToRemove is null (not found in DOM), log a warning and update data directly
+        console.warn(`Attempted to delete a non-existent list item from DOM for index ${index}. Proceeding with data removal.`);
         todos.splice(index, 1);
         saveTodos();
         renderTodos();
-        showToast('Task deleted successfully!', 'error');
+        showToast('Task deleted. (Item not found in current view)', 'error');
     }
 }
 
 
 function editTodo(index, newText, newPriority = null) {
     if (index >= 0 && index < todos.length) {
+        const originalText = todos[index].text;
         if (newText === '') {
-            deleteTodo(index);
+            if (originalText !== '') {
+                // Revert to original text if the edit resulted in an empty string
+                // and the original was not empty.
+                todos[index].text = originalText; // Revert
+                // Priority should remain as it was or be updated if newPriority was provided
+                // during an edit attempt that also cleared the text.
+                if (newPriority !== null) {
+                    todos[index].priority = newPriority;
+                }
+                saveTodos();
+                renderTodos();
+                showToast('Task edit cannot be empty. Reverted to original.', 'warning');
+            } else {
+                // Original text was also empty. This case is unlikely if tasks are added with text.
+                // For now, we can simply do nothing or log it.
+                // Or, if we want to delete such an "empty" task:
+                // deleteTodo(index);
+                // For this implementation, we'll just log and prevent further action.
+                console.warn(`Attempted to edit task at index ${index} to empty, but it was already empty. No action taken.`);
+                // Make sure to re-render if the priority was being edited along with the empty text.
+                if (newPriority !== null && todos[index].priority !== newPriority) {
+                    todos[index].priority = newPriority;
+                    saveTodos();
+                    renderTodos();
+                    showToast('Task priority updated, text remains empty.', 'info');
+                } else {
+                    renderTodos(); // Ensure UI consistency if only text was cleared and then reverted
+                }
+            }
             return;
         }
-        todos[index].text = newText;
-        if (newPriority !== null) {
-            todos[index].priority = newPriority;
+
+        // If newText is not empty, proceed with the update.
+        let changed = false;
+        if (todos[index].text !== newText) {
+            todos[index].text = newText;
+            changed = true;
         }
-        saveTodos();
-        renderTodos();
-        showToast('Task updated!', 'info');
+        if (newPriority !== null && todos[index].priority !== newPriority) {
+            todos[index].priority = newPriority;
+            changed = true;
+        }
+
+        if (changed) {
+            saveTodos();
+            renderTodos();
+            showToast('Task updated!', 'info');
+        } else {
+            // If nothing changed (e.g., submitted original text and priority),
+            // we might not need to save/render/toast.
+            // However, renderTodos() is called by setupTodoTextEditing blur anyway.
+            // For simplicity, current structure re-renders.
+            // To optimize, one could skip save/render/toast if !changed.
+            renderTodos(); // Ensure editing UI elements are correctly removed
+        }
     }
 }
 
@@ -599,3 +704,4 @@ applyTheme(loadThemePreference());
 
 loadTodos();
 renderTodos(); // This will now call updateTaskCounters()
+setFilter(currentFilter); // Ensure filter buttons ARIA attributes are set on load
