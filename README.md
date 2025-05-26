@@ -57,9 +57,9 @@ Markdown
 📸 Screenshot
 
 Light Mode Example:
-![alt text for light mode](screenshots/light-mode.png)
+![To-Do List in Light Mode](https://raw.githubusercontent.com/DafinGit/To-Do-List/main/screenshots/light-mode.png)
 Dark Mode Example:
-![alt text for dark mode](screenshots/dark-mode.png)
+![To-Do List in Dark Mode](https://raw.githubusercontent.com/DafinGit/To-Do-List/main/screenshots/dark-mode.png)
 
 🛣️ Future Improvements (Ideas for Further Development)
 Multi-User / Backend Integration: Transition from localStorage to a server-side backend with a database (e.g., Node.js with Express and MongoDB/PostgreSQL) to support multiple users and more robust data management.
