@@ -472,74 +472,30 @@ function reorderTodos(fromIndex, toIndex) {
 /* ===================================== */
 
 function clearCompletedTodos() {
-    const completedItems = Array.from(todoList.querySelectorAll('li')).filter(li => {
-        const originalIndex = parseInt(li.dataset.originalIndex);
-        return todos[originalIndex] && todos[originalIndex].completed;
-    });
+    const hasCompletedTasks = todos.some(todo => todo.completed);
 
-    if (completedItems.length === 0) {
+    if (!hasCompletedTasks) {
         displayError('No completed tasks to clear!');
         return;
     }
 
-    let itemsRemovedCount = 0;
-    completedItems.forEach(item => {
-        const computedStyle = getComputedStyle(item);
-        item.style.setProperty('--initial-height', computedStyle.height);
-        item.style.setProperty('--initial-padding-top', computedStyle.paddingTop);
-        item.style.setProperty('--initial-padding-bottom', computedStyle.paddingBottom);
-        item.style.setProperty('--initial-margin-bottom', computedStyle.marginBottom);
-        item.style.setProperty('--initial-border-width', computedStyle.borderTopWidth);
-
-        item.classList.add('fade-out');
-        item.addEventListener('animationend', function handler(e) {
-            if (e.animationName === 'fadeOut') {
-                item.remove();
-                itemsRemovedCount++;
-                if (itemsRemovedCount === completedItems.length) {
-                    todos = todos.filter(todo => !todo.completed);
-                    saveTodos();
-                    renderTodos();
-                    showToast('Completed tasks cleared!', 'success');
-                }
-            }
-            item.removeEventListener('animationend', handler);
-        }, { once: true });
-    });
+    todos = todos.filter(todo => !todo.completed);
+    saveTodos();
+    renderTodos();
+    showToast('Completed tasks cleared!', 'success');
 }
 
 function clearAllTodos() {
     if (confirm('Are you sure you want to delete ALL tasks? This action cannot be undone.')) {
-        const allItems = Array.from(todoList.querySelectorAll('li'));
-        if (allItems.length === 0) {
+        if (todos.length === 0) {
             displayError('Your To-Do list is already empty!');
             return;
         }
 
-        let itemsRemovedCount = 0;
-        allItems.forEach(item => {
-            const computedStyle = getComputedStyle(item);
-            item.style.setProperty('--initial-height', computedStyle.height);
-            item.style.setProperty('--initial-padding-top', computedStyle.paddingTop);
-            item.style.setProperty('--initial-padding-bottom', computedStyle.paddingBottom);
-            item.style.setProperty('--initial-margin-bottom', computedStyle.marginBottom);
-            item.style.setProperty('--initial-border-width', computedStyle.borderTopWidth);
-
-            item.classList.add('fade-out');
-            item.addEventListener('animationend', function handler(e) {
-                if (e.animationName === 'fadeOut') {
-                    item.remove();
-                    itemsRemovedCount++;
-                    if (itemsRemovedCount === allItems.length) {
-                        todos = [];
-                        saveTodos();
-                        renderTodos();
-                        showToast('All tasks cleared!', 'success');
-                    }
-                }
-                item.removeEventListener('animationend', handler);
-            }, { once: true });
-        });
+        todos = [];
+        saveTodos();
+        renderTodos();
+        showToast('All tasks cleared!', 'success');
     }
 }
 
